@@ -50,11 +50,11 @@ const prod = useRouteQuery<string, boolean>('prod', 'false', {
   transform: stringToBooleanTransformer,
 })
 
-const currentHref = shallowRef(location.href)
+const currentHref = shallowRef(window?.location?.href)
 const route = useRoute()
 
 watch(() => route.fullPath, () => {
-  currentHref.value = location.href
+  currentHref.value = window?.location?.href
 })
 
 const issueLink = computed(() => {
@@ -93,14 +93,16 @@ const issueLink = computed(() => {
           />
         </UTooltip>
         <UTooltip text="Report an issue on GitHub">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            :to="issueLink"
-            target="_blank"
-            icon="i-pajamas-issue-new"
-            aria-label="Issue via GitHub"
-          />
+          <ClientOnly>
+            <UButton
+              color="neutral"
+              variant="ghost"
+              :to="issueLink"
+              target="_blank"
+              icon="i-pajamas-issue-new"
+              aria-label="Issue via GitHub"
+            />
+          </ClientOnly>
         </UTooltip>
       </div>
       <div class="lg:hidden">
@@ -131,18 +133,20 @@ const issueLink = computed(() => {
               <div class="flex gap-2">
                 <USelectMenu v-model="vueUseVersion" :items="vueUseVersionsSorted" class="w-32" icon="i-logos-vueuse" :loading="loadingVersions" />
                 <USelectMenu v-model="vueVersion" :items="vueVersionsSorted" class="w-32" icon="i-logos-vue" :loading="loadingVersions" />
-                <UButton icon="i-lucide-refresh-ccw" size="md" color="primary" variant="soft" @click="fetchVersions" />
+                <UButton icon="i-lucide-refresh-ccw" size="md" color="primary" variant="soft" @click="() => fetchVersions()" />
               </div>
-              <UButton
-                color="neutral"
-                variant="ghost"
-                :to="issueLink"
-                target="_blank"
-                icon="i-pajamas-issue-new"
-                aria-label="Issue via GitHub"
-              >
-                Report an issue on GitHub
-              </UButton>
+              <ClientOnly>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  :to="issueLink"
+                  target="_blank"
+                  icon="i-pajamas-issue-new"
+                  aria-label="Issue via GitHub"
+                >
+                  Report an issue on GitHub
+                </UButton>
+              </ClientOnly>
             </section>
           </template>
         </USlideover>
