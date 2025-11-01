@@ -42,7 +42,7 @@ const vueUsePackages = [
 const { data: vueUseImportCDNs } = await useAsyncData(
   'vueUseImportCDNs',
   async () => {
-    const packageJson = await $fetch<{ module: string }>(`https://cdn.jsdelivr.net/npm/${vueUsePackages[1]}@${vueuseVersion.value}/package.json`)
+    const packageJson = await $fetch<{ module: string }>(`https://cdn.jsdelivr.net/npm/@vueuse/core@${vueuseVersion.value}/package.json`)
     // module field possible values: './xx', 'xxx', '/xxx'
     const entry = packageJson.module.replace(/^(\.\/|\/)+/, '')
     return vueUsePackages.map(p => [p, `https://cdn.jsdelivr.net/npm/${p}@${vueuseVersion.value}/${entry}`])
