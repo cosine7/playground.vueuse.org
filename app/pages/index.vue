@@ -39,20 +39,16 @@ const vueUsePackages = [
   '@vueuse/rxjs',
 ]
 
-const { data: vueUseImportCDNs } = await useAsyncData(
-  'vueUseImportCDNs',
-  async () => {
-    const packageJson = await $fetch<{ module: string }>(`https://cdn.jsdelivr.net/npm/@vueuse/core@${vueuseVersion.value}/package.json`)
-    // module field possible values: './xx', 'xxx', '/xxx'
-    const entry = packageJson.module.replace(/^(\.\/|\/)+/, '')
-    return vueUsePackages.map(p => [p, `https://cdn.jsdelivr.net/npm/${p}@${vueuseVersion.value}/${entry}`])
-  },
-  { watch: [vueuseVersion], default: () => ([]) },
-)
+function generateVueUseImportCDNs() {
+  const file = Number.parseInt(vueuseVersion.value) >= 13 ? '+esm' : 'index.mjs'
+  return vueUsePackages.map((p) => {
+    return [p, `https://cdn.jsdelivr.net/npm/${p}@${vueuseVersion.value}/${file}`]
+  })
+}
 
 const importMap = computed(() => {
   return mergeImportMap(builtinImportMap.value, {
-    imports: Object.fromEntries([...vueUseImportCDNs.value, ['vue-demi', 'https://cdn.jsdelivr.net/npm/vue-demi@0.14.10/lib/index.mjs'], ['yaml', 'https://cdn.jsdelivr.net/npm/yaml@2.7.1/+esm']]),
+    imports: Object.fromEntries([...generateVueUseImportCDNs(), ['vue-demi', 'https://cdn.jsdelivr.net/npm/vue-demi@0.14.10/lib/index.mjs'], ['yaml', 'https://cdn.jsdelivr.net/npm/yaml@2.7.1/+esm']]),
   })
 })
 
